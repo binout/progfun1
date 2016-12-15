@@ -128,5 +128,27 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("forall") {
+    new TestSets {
+      assert(forall(s1, x => x==1));
+      assert(!forall(s1, x => x==2));
+    }
+  }
+
+  test("exists") {
+    new TestSets {
+      assert(exists(s1, x => x==1));
+      assert(!exists(s1, x => x==2));
+    }
+  }
+
+  test("map") {
+    new TestSets {
+      assert(contains(map(s1, x => x*2), 2))
+      assert(contains(map(s1, x => x+10), 11))
+
+    }
+  }
+
 
 }
