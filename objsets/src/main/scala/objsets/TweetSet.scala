@@ -139,27 +139,13 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
         left.filterAcc(p, right.filterAcc(p, acc))
     }
 
-    def mostRetweeted: Tweet =
+    def mostRetweeted: Tweet = {
+      def maxRetweet(tweet1: Tweet, tweet2: Tweet): Tweet = if (tweet1.retweets > tweet2.retweets) tweet1 else tweet2
       if (left.isEmpty && right.isEmpty) elem
-      else {
-        if (left.isEmpty) {
-          val rightMost = right.mostRetweeted
-          if (rightMost.retweets > elem.retweets) rightMost else elem
-        }
-        else if (right.isEmpty) {
-          val leftMost = left.mostRetweeted
-          if (leftMost.retweets > elem.retweets) leftMost else elem
-        }
-        else {
-          val leftMost = left.mostRetweeted
-          val rightMost = right.mostRetweeted
-          if (leftMost.retweets > rightMost.retweets) {
-            if (leftMost.retweets > elem.retweets) leftMost else elem
-          } else {
-            if (rightMost.retweets > elem.retweets) rightMost else elem
-          }
-        }
-      }
+      else if (left.isEmpty) maxRetweet(right.mostRetweeted, elem)
+      else if (right.isEmpty) maxRetweet(left.mostRetweeted, elem)
+      else maxRetweet(left.mostRetweeted, maxRetweet(right.mostRetweeted, elem))
+    }
 
     def isEmpty: Boolean = false
 
