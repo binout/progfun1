@@ -66,7 +66,9 @@ abstract class TweetSet {
    * and be implemented in the subclasses?
    */
     def mostRetweeted: Tweet
-  
+
+    def isEmpty: Boolean
+
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
    * in descending order. In other words, the head of the resulting list should
@@ -76,7 +78,7 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def descendingByRetweet: TweetList = ???
+    def descendingByRetweet: TweetList
   
   /**
    * The following methods are already implemented
@@ -113,6 +115,10 @@ class Empty extends TweetSet {
 
     def mostRetweeted: Tweet = throw new NoSuchElementException
 
+    def isEmpty: Boolean = true
+
+    def descendingByRetweet: TweetList = Nil
+
   /**
    * The following methods are already implemented
    */
@@ -138,7 +144,35 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     def union(that: TweetSet): TweetSet =
       left.union(that.union(right)).incl(elem)
 
-    def mostRetweeted: Tweet = ???
+    def mostRetweeted: Tweet =
+      if (left.isEmpty && right.isEmpty) elem
+      else {
+        if (left.isEmpty) {
+          val rightMost = right.mostRetweeted
+          if (rightMost.retweets > elem.retweets) rightMost else elem
+        }
+        else if (right.isEmpty) {
+          val leftMost = left.mostRetweeted
+          if (leftMost.retweets > elem.retweets) leftMost else elem
+        }
+        else {
+          val leftMost = left.mostRetweeted
+          val rightMost = right.mostRetweeted
+          if (leftMost.retweets > rightMost.retweets) {
+            if (leftMost.retweets > elem.retweets) leftMost else elem
+          } else {
+            if (rightMost.retweets > elem.retweets) rightMost else elem
+          }
+        }
+      }
+
+    def isEmpty: Boolean = false
+
+    def descendingByRetweet: TweetList = {
+      val most = mostRetweeted
+      new Cons(most, remove(most).descendingByRetweet)
+    }
+
 
   /**
    * The following methods are already implemented
